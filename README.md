@@ -3,23 +3,33 @@
 Modelos de ambientes de desenvolvimento baseados em Dev Containers.
 
 Este repositório centraliza as configurações que uso para iniciar projetos em
-Java, Python/data science e LaTeX. Cada ambiente fica em uma pasta própria com
-uma subpasta `.devcontainer` pronta para ser reaproveitada.
+Java, Python/data science e LaTeX. Cada ambiente fica em uma subpasta de
+`.devcontainer`, seguindo o formato reconhecido pelo GitHub Codespaces para
+múltiplas configurações.
 
 ## Ambientes
 
 | Ambiente | Pasta | Referência |
 | --- | --- | --- |
-| Java | `java/.devcontainer` | `fabriciosantana/poo`, branch `2026.1` |
-| Python | `python/.devcontainer` | `fabriciosantana/mcdia`, branch `main` |
-| LaTeX | `latex/.devcontainer` | `fabriciosantana/latex`, branch `main` |
+| Java | `.devcontainer/java` | `fabriciosantana/poo`, branch `2026.1` |
+| Python | `.devcontainer/python` | `fabriciosantana/mcdia`, branch `main` |
+| LaTeX | `.devcontainer/latex` | `fabriciosantana/latex`, branch `main` |
+
+## Como usar no Codespaces
+
+Ao criar um Codespace a partir deste repositório, escolha a configuração desejada
+em `New with options...`. O Codespaces reconhece os arquivos no padrão:
+
+```text
+.devcontainer/<ambiente>/devcontainer.json
+```
 
 ## Como usar em outro projeto
 
 Copie o modelo desejado para a raiz do projeto:
 
 ```bash
-cp -R java/.devcontainer /caminho/do/projeto/.devcontainer
+cp -R .devcontainer/java /caminho/do/projeto/.devcontainer
 ```
 
 Depois abra o projeto no VS Code e use o comando:
@@ -28,13 +38,14 @@ Depois abra o projeto no VS Code e use o comando:
 Dev Containers: Reopen in Container
 ```
 
-Troque `java` por `python` ou `latex` conforme o ambiente desejado.
+Troque `java` por `python` ou `latex` conforme o ambiente desejado. Ao copiar
+para outro projeto, se houver `postCreateCommand`, ajuste o caminho para apontar
+para `.devcontainer/post-create.sh`.
 
 ## Como testar neste repositório
 
-Abra uma das pastas de ambiente no VS Code, por exemplo `java`, e execute
-`Dev Containers: Reopen in Container`. A configuração será lida a partir de
-`java/.devcontainer/devcontainer.json`.
+Crie um Codespace usando `New with options...` ou, no VS Code, selecione a
+configuração desejada ao abrir o repositório em container.
 
 ## Atualização das referências
 
