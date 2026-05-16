@@ -11,7 +11,7 @@ múltiplas configurações.
 | -------- | ---------------------- |
 | Java     | `.devcontainer/java`   |
 | Python   | `.devcontainer/python` |
-| LaTeX    |
+| LaTeX    | `.devcontainer/latex`  |
 
 ## Como usar no Codespaces
 
