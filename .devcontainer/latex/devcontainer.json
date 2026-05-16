@@ -1,5 +1,5 @@
 {
-  "name": "LaTeX Workspace",
+  "name": "LaTeX",
   "build": {
     "dockerfile": "Dockerfile"
   },

@@ -1,5 +1,5 @@
 {
-  "name": "Java dev box",
+  "name": "Java 21",
   "build": {
     "dockerfile": "Dockerfile"
   },
