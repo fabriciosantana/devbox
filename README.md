@@ -1,4 +1,4 @@
-# Dev Conteiners
+# Dev Containers
 
 Este repositório centraliza as configurações que uso para iniciar projetos em
 Java, Python/data science e LaTeX. Cada ambiente fica em uma subpasta de
