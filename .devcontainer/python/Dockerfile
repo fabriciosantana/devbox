@@ -48,11 +48,38 @@ RUN apt-get update && \
     git lfs install --system && \
     rm -rf /var/lib/apt/lists/*
 
+# Install Docker Engine from Docker's official APT repository.
+RUN install -m 0755 -d /etc/apt/keyrings \
+    && curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc \
+    && chmod a+r /etc/apt/keyrings/docker.asc \
+    && . /etc/os-release \
+    && printf '%s\n' \
+        'Types: deb' \
+        'URIs: https://download.docker.com/linux/ubuntu' \
+        "Suites: ${UBUNTU_CODENAME:-$VERSION_CODENAME}" \
+        'Components: stable' \
+        "Architectures: $(dpkg --print-architecture)" \
+        'Signed-By: /etc/apt/keyrings/docker.asc' \
+        > /etc/apt/sources.list.d/docker.sources \
+    && apt-get update \
+    && apt-get install -y --no-install-recommends \
+        containerd.io \
+        docker-buildx-plugin \
+        docker-ce \
+        docker-ce-cli \
+        docker-compose-plugin \
+    && if ! getent group docker >/dev/null; then groupadd docker; fi \
+    && usermod -aG docker vscode \
+    && mkdir -p /etc/docker \
+    && printf '%s\n' \
+        '{' \
+        '  "storage-driver": "vfs"' \
+        '}' \
+        > /etc/docker/daemon.json \
+    && rm -rf /var/lib/apt/lists/*
+
 # Install Ollama CLI/runtime (service can be started manually with `ollama serve`).
 RUN curl -fsSL https://ollama.com/install.sh | sh
-
-# Ensure the default devcontainer user can access Docker without sudo.
-#RUN usermod -aG docker vscode
 
 # Make the environment active by default
 ENV PATH=${CONDA_DIR}/envs/mcdia/bin:${CONDA_DIR}/bin:${PATH}
