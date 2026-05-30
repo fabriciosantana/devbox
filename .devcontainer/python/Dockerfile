@@ -70,12 +70,6 @@ RUN install -m 0755 -d /etc/apt/keyrings \
         docker-compose-plugin \
     && if ! getent group docker >/dev/null; then groupadd docker; fi \
     && usermod -aG docker vscode \
-    && mkdir -p /etc/docker \
-    && printf '%s\n' \
-        '{' \
-        '  "storage-driver": "vfs"' \
-        '}' \
-        > /etc/docker/daemon.json \
     && rm -rf /var/lib/apt/lists/*
 
 # Install Ollama CLI/runtime (service can be started manually with `ollama serve`).
