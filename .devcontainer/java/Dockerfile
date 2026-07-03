@@ -1,53 +1,47 @@
 FROM mcr.microsoft.com/devcontainers/base:ubuntu-24.04
 
-# Instala dependências e Git LFS
-RUN apt-get update && \
-    apt-get install -y curl zip unzip git-lfs && \
-    git lfs install
+ENV DEBIAN_FRONTEND=noninteractive
 
-# Instala Node.js 24.x fixo e habilita pnpm via Corepack
-RUN curl -fsSL https://deb.nodesource.com/setup_24.x | bash - && \
-    apt-get install -y nodejs && \
-    corepack enable
+SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
-# Instala Docker Engine, CLI, Buildx e Compose dentro do container
-RUN apt-get update && \
-    apt-get install -y ca-certificates gnupg lsb-release && \
-    install -m 0755 -d /etc/apt/keyrings && \
-    curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc && \
-    chmod a+r /etc/apt/keyrings/docker.asc && \
-    echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu \
-      $(. /etc/os-release && echo \"${UBUNTU_CODENAME:-$VERSION_CODENAME}\") stable" \
-      > /etc/apt/sources.list.d/docker.list && \
-    apt-get update && \
-    apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin && \
-    usermod -aG docker vscode
+# Complementos essenciais para aula e GitHub Codespaces.
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+        ca-certificates \
+        curl \
+        git-lfs \
+        gnupg \
+        unzip \
+        zip \
+    && install -m 0755 -d /etc/apt/keyrings \
+    && curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg \
+        -o /etc/apt/keyrings/githubcli-archive-keyring.gpg \
+    && chmod go+r /etc/apt/keyrings/githubcli-archive-keyring.gpg \
+    && echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" \
+        > /etc/apt/sources.list.d/github-cli.list \
+    && apt-get update \
+    && apt-get install -y --no-install-recommends gh \
+    && git lfs install --system \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
 
-RUN apt-get update && apt-get install -y \
-    libfreetype6 \
-    libfreetype6-dev \
-    libfontconfig1 \
-    graphviz
-
-RUN wget -O /usr/local/bin/plantuml.jar https://github.com/plantuml/plantuml/releases/download/v1.2025.10/plantuml-1.2025.10.jar
-
-# Instala SDKMAN e configura no .bashrc
 USER vscode
 
-ENV SDKMAN_DIR="/home/vscode/.sdkman"
+ENV SDKMAN_DIR=/home/vscode/.sdkman
+ENV SDKMAN_AUTO_ANSWER=true
+ARG JAVA_VERSION
+ARG MAVEN_VERSION
 
-RUN curl -s "https://get.sdkman.io" | bash && \
-    echo "source $HOME/.sdkman/bin/sdkman-init.sh" >> $HOME/.bashrc
+RUN curl -fsSL "https://get.sdkman.io?ci=true&rcupdate=false" | bash \
+    && source "${SDKMAN_DIR}/bin/sdkman-init.sh" \
+    && sdk install java "${JAVA_VERSION}" \
+    && sdk install maven "${MAVEN_VERSION}" \
+    && sdk flush archives \
+    && sdk flush temp \
+    && echo "source ${SDKMAN_DIR}/bin/sdkman-init.sh" >> /home/vscode/.bashrc
 
-RUN echo 'alias plantuml="java -jar /usr/local/bin/plantuml.jar"' >> $HOME/.bashrc
-
-# Shell como bash para comandos com SDKMAN
-SHELL ["bash", "-c"]
-
-# Instala Java 21 via SDKMAN
-RUN source "$HOME/.sdkman/bin/sdkman-init.sh" && \
-    sdk install java 21.0.2-open && \
-    sdk install maven && \
-    sdk flush archives
+ENV JAVA_HOME=${SDKMAN_DIR}/candidates/java/current
+ENV MAVEN_HOME=${SDKMAN_DIR}/candidates/maven/current
+ENV PATH=${JAVA_HOME}/bin:${MAVEN_HOME}/bin:${PATH}
 
 CMD ["bash"]
