@@ -4,12 +4,12 @@
     "dockerfile": "Dockerfile",
     "args": {
       "JAVA_VERSION": "25.0.2-open",
-      "MAVEN_VERSION": "3.9.11"
+      "MAVEN_VERSION": "3.9.16"
     }
   },
   "remoteUser": "vscode",
   "updateRemoteUserUID": true,
-  "postCreateCommand": "bash -lc 'sdk version && java --version && mvn --version && git lfs version && gh --version'",
+  "postCreateCommand": "bash -lc 'source $HOME/.sdkman/bin/sdkman-init.sh && sdk version && java --version && mvn --version && git lfs version && gh --version'",
   "customizations": {
     "vscode": {
       "extensions": [
